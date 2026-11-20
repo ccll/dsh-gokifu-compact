@@ -11,14 +11,17 @@
 ## 版本与安装
 
 - 版本：`1.19.1-ccll.1`
-- 安装（sim，profile `web`）：
+- 安装（sim，profile `web`，PowerShell）：
 
-  ```bash
-  dsh plugin --profile web add "github:ccll/dsh-gokifu-compact#v1.19.1-ccll.1"
+  ```powershell
+  Set-Location "$env:USERPROFILE\.dsh\profiles\web"
+  pnpm add "github:ccll/dsh-gokifu-compact#v1.19.1-ccll.1"
   ```
 
+  不要用 `dsh plugin --profile web add ...`：当前 DSH 版本会持有 `package.json.lock`，而 pnpm 又要写同一个 `package.json`，命令会在 pnpm 实际完成后仍挂住不退出（2026-11-20 sim 实测）。直接 `pnpm add` 可绕过这个死锁。
+
   然后重启 DSH。
-- 验证：gokifu 设置页应显示压缩阈值 85%、首折 0.5；`POST /gokifu/api {"action":"state"}` 应返回 `profile: "web"`。
+- 验证：`POST /gokifu/api {"action":"state"}` 应返回 `profile: "web"`、`version: "1.19.1-ccll.1"`、`thresholdRatio: 0.85`、`firstFoldRatio: 0.5`；设置页也应显示 85% / 0.5。
 
 ## 上游同步
 
