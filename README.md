@@ -7,6 +7,8 @@
 [![npm](https://img.shields.io/npm/v/dsh-gokifu-compact.svg)](https://www.npmjs.com/package/dsh-gokifu-compact)
 [![dsh](https://img.shields.io/badge/DeepSeek%20Harness-plugin-orange.svg)](https://github.com/topics/dsh-plugin)
 
+> **ccll fork**：本分支基于上游 `v1.19.1`，额外包含设置页 profile 回落、`firstFoldRatio` 小数保留，以及四个 preset 的 `0.85 / 0.5` 默认配置；详见 [FORK.md](FORK.md)。
+
 > **一句话**：给 DSH 会话换一个**上下文压缩后端** —— 把「历史 → 一段摘要」换成
 > 「历史 → 可复盘的棋谱 DAG + 每步一份极小的热清单」，**失败记忆逐字保留，模型没有丢掉它的权限**。
 >

@@ -17,6 +17,14 @@ import nodeFs from "node:fs";
 import nodePath from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
+// ccll fork：测试必须与开发者 shell 隔离。UI 缺省 profile 的用例期望 desktop，
+// 而从 DSH 会话里跑测试会继承 DSH_PROFILE=web，导致同一套用例随环境变红。
+const savedProfile = process.env.DSH_PROFILE;
+delete process.env.DSH_PROFILE;
+process.on("exit", () => {
+  if (savedProfile !== undefined) process.env.DSH_PROFILE = savedProfile;
+});
+
 const args = process.argv.slice(2);
 const dirArg = args.find((a) => a.startsWith("--dir="));
 const HERE = dirArg ? nodePath.resolve(dirArg.slice("--dir=".length)) : nodePath.dirname(fileURLToPath(import.meta.url));

@@ -87,6 +87,16 @@
         config:
           - id: gokifu-compact
             name: 'dsh-gokifu-compact/engine'
+            config:
+              thresholdRatio: 0.85
+              firstFoldRatio: 0.5
+              headroomTokens: 65536
+              retainRatio: 0.16
+              growthFloorTokens: 40000
+              maxTokens: 8192
+              summaryMode: hybrid
+              hotLedger: true
+              hotLedgerMaxTokens: 500
           - id: command-compact
             name: '@deepseek-ai/dsh-command-compact'
           - id: tool-result-pruner
@@ -213,6 +223,16 @@
         config:
           - id: gokifu-compact
             name: 'dsh-gokifu-compact/engine'
+            config:
+              thresholdRatio: 0.85
+              firstFoldRatio: 0.5
+              headroomTokens: 65536
+              retainRatio: 0.16
+              growthFloorTokens: 40000
+              maxTokens: 8192
+              summaryMode: hybrid
+              hotLedger: true
+              hotLedgerMaxTokens: 500
           - id: command-compact
             name: '@deepseek-ai/dsh-command-compact'
           - id: tool-result-pruner
@@ -297,6 +317,16 @@
         config:
           - id: gokifu-compact
             name: 'dsh-gokifu-compact/engine'
+            config:
+              thresholdRatio: 0.85
+              firstFoldRatio: 0.5
+              headroomTokens: 65536
+              retainRatio: 0.16
+              growthFloorTokens: 40000
+              maxTokens: 8192
+              summaryMode: hybrid
+              hotLedger: true
+              hotLedgerMaxTokens: 500
           - id: command-compact
             name: '@deepseek-ai/dsh-command-compact'
       - id: persistent-shell
@@ -416,6 +446,16 @@
         config:
           - id: gokifu-compact
             name: 'dsh-gokifu-compact/engine'
+            config:
+              thresholdRatio: 0.85
+              firstFoldRatio: 0.5
+              headroomTokens: 65536
+              retainRatio: 0.16
+              growthFloorTokens: 40000
+              maxTokens: 8192
+              summaryMode: hybrid
+              hotLedger: true
+              hotLedgerMaxTokens: 500
           - id: command-compact
             name: '@deepseek-ai/dsh-command-compact'
           - id: tool-result-pruner

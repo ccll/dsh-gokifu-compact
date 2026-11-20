@@ -1,14 +1,14 @@
 {
   "name": "dsh-gokifu-compact",
-  "version": "1.19.1",
-  "description": "DSH context-compression backend with a go game record (kifu) DAG: node = position, edge = attempted move + result. Incremental fold (each span summarized once), failure memory that survives compaction, transposition detection (chess-engine style), and a tiny hot ledger rebuilt every step.",
+  "version": "1.19.1-ccll.1",
+  "description": "DSH context-compression backend with a go game record (kifu) DAG: node = position, edge = attempted move + result. Incremental fold (each span summarized once), failure memory that survives compaction, transposition detection (chess-engine style), and a tiny hot ledger rebuilt every step. ccll fork adds UI profile fallback and firstFoldRatio decimal preservation.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MYCF711/dsh-GOkifu-compact.git"
+    "url": "git+https://github.com/ccll/dsh-gokifu-compact.git"
   },
-  "homepage": "https://github.com/MYCF711/dsh-GOkifu-compact#readme",
+  "homepage": "https://github.com/ccll/dsh-gokifu-compact#readme",
   "bugs": {
-    "url": "https://github.com/MYCF711/dsh-GOkifu-compact/issues"
+    "url": "https://github.com/ccll/dsh-gokifu-compact/issues"
   },
   "author": "MYCF711 <MYCF711@users.noreply.github.com>",
   "type": "module",

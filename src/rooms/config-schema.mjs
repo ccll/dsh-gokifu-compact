@@ -359,7 +359,10 @@ export function validatePatch(patch = {}) {
       if (!Number.isFinite(n)) throw new Error(`${label(key)} 必须是有限数字`);
       const [min, max] = entry.range;
       if (n < min || n > max) throw new Error(`${label(key)} 超出范围 [${min}, ${max}]（收到 ${n}）`);
-      out[key] = key === "thresholdRatio" || key === "retainRatio" ? Math.round(n * 1000) / 1000 : Math.round(n);
+      // ccll fork：firstFoldRatio 也是比例键，不能被 Math.round 成整数（0.5 会变 1）。
+      out[key] = key === "thresholdRatio" || key === "retainRatio" || key === "firstFoldRatio"
+        ? Math.round(n * 1000) / 1000
+        : Math.round(n);
       continue;
     }
     if (entry.type === "enum") {

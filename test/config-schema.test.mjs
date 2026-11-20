@@ -146,6 +146,8 @@ export const tests = {
     t.throws(() => validatePatch({ auto: 1 }), "布尔必须是 true/false");
     t.eq(validatePatch({ nope: 1, auto: false }).skipped, ["nope"], "未知键进 skipped");
     t.eq(validatePatch({ retainRatio: "0.12345" }).patch.retainRatio, 0.123, "比率保留三位小数");
+    t.eq(validatePatch({ firstFoldRatio: "0.5" }).patch.firstFoldRatio, 0.5, "首折比例必须保留小数");
+    t.eq(validatePatch({ firstFoldRatio: "0.4567" }).patch.firstFoldRatio, 0.457, "首折比例保留三位小数");
     t.eq(validatePatch({ tier2After: "9.6" }).patch.tier2After, 10, "整数键四舍五入");
     let msg = "no-throw";
     try {

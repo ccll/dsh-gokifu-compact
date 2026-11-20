@@ -589,6 +589,17 @@
 
 # 更新记录
 
+## 1.19.1-ccll.1（2026-11-20，ccll fork）
+
+基于上游 `v1.19.1`，供 ccll 的 DSH sim 节点使用。相对上游的差异：
+
+- **设置页 profile 回落**：`POST /gokifu/api` 的 `state` / `save` 在请求不带 `profile` 时使用当前宿主 profile（`ctx.get("profileContext").name`），再回落 `DSH_PROFILE` / `desktop`；不再一律回落 `desktop`。
+- **`firstFoldRatio` 小数保留**：`validatePatch` 不再对该键 `Math.round`，`0.5` 不会写成 `1`。
+- **四个 preset 默认配置**：`thresholdRatio: 0.85`、`firstFoldRatio: 0.5`、`headroomTokens: 65536`、`retainRatio: 0.16`、`growthFloorTokens: 40000`、`maxTokens: 8192`、`summaryMode: hybrid`、`hotLedger: true`、`hotLedgerMaxTokens: 500`。
+- **测试隔离**：`test/run.mjs` 启动时清除 `DSH_PROFILE`，避免从 DSH 会话运行测试时继承 web profile。
+
+验证：`config-schema`、`ui`、`ui-home`、`ui-update`、`release-tool` 等相关用例通过；248 个测试文件。
+
 ## 1.19.1（2026-11-09，稳定版）
 
 > **本版只修一个 bug，但它是 1.19.0 引进的。**

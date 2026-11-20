@@ -623,12 +623,24 @@ function todayAggregate(home = resolveHome()) {
 
 /**
  * 从请求体里取 profile 名（W-D）。只允许安全字符（挡住 `../` 之类的路径穿越）；
- * 缺省 / 非法一律回落 `desktop` —— **保持向后兼容**（老的调用方根本不带这个字段）。
+ * 缺省 / 非法时用 fallback（当前宿主 profile），再回落 DSH_PROFILE / desktop。
+ *
+ * ccll fork：gokifu 的浏览器半（lib/client.js）从不带 `profile`，原实现一律回落
+ * `desktop`，导致 web profile 的设置页读到 desktop 的默认值。这里让 host 用
+ * 当前运行 profile 兜底。
  */
-function profileFromRequest(body) {
+function profileFromRequest(body, fallback = "desktop") {
   const raw = typeof body?.profile === "string" ? body.profile.trim() : "";
-  return /^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(raw) ? raw : "desktop";
+  if (/^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(raw)) return raw;
+  if (fallback) return fallback;
+  const fromEnv = String(process.env.DSH_PROFILE ?? "").trim();
+  return /^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(fromEnv) ? fromEnv : "desktop";
 }
+
+/**
+ * 当前宿主 profile 无法从 ctx 取得时的兜底：DSH_PROFILE，再回落 desktop。
+ * 只用于 UI 路由的缺省 profile，不改变显式传入 profile 的语义。
+ */
 
 /**
  * 安装/单实例/摘要模型 三项体检（比 test/doctor.mjs 轻，够页面用）。
@@ -1382,7 +1394,7 @@ export function saveConfig(patch, options = {}) {
     // ★ T62：`label` 在本文件从未定义。这里要打印的是**键名**（不是值），直接用 `key` 即可。
     if (SECRET_KEY_RE.test(key)) throw new Error(`含密钥的键不允许通过页面写入：${key}`);
   }
-  const presets = findPresetFiles(home).filter((p) => p.text.includes(ENTRY_ID));
+  const presets = findPresetFiles(home, options.profile).filter((p) => p.text.includes(ENTRY_ID));
   if (presets.length === 0) throw new Error(`没有找到含 ${ENTRY_ID} 的 preset（先跑 install）`);
   const changed = [];
   const pruned = [];
@@ -1540,6 +1552,19 @@ export function registerFallbackRoute(ctx, error) {
 
 function applyInner(ctx) {
   scheduleHomePatchHeal(ctx);
+
+  // ccll fork：页面请求不带 profile 时，用当前运行 profile 兜底；取不到再扫
+  // profiles/*/package.json，找装了本插件的 profile。显式 body.profile 仍优先。
+  const hostProfile = (() => {
+    try {
+      const profile = ctx?.get?.("profileContext");
+      if (profile && typeof profile.name === "string" && profile.name.length > 0) return profile.name;
+    } catch {
+      /* profileContext unavailable: fall through */
+    }
+    const env = String(process.env.DSH_PROFILE ?? "").trim();
+    return /^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(env) ? env : null;
+  })();
   // 绑定 0.0.0.0 = 本机之外也能访问。**这不构成放行理由**（task-34）：
   // 非回环 Host 仍然必须出现在 DSH_GOKIFU_ALLOWED_HOSTS 里，否则一律按不可信拒绝（fail closed）。
   // 这里的 boundAllInterfaces 只用于把 403 的文案写得更可操作。
@@ -1580,7 +1605,8 @@ function applyInner(ctx) {
         const action = String(body.action ?? "state");
         // ★ W-D：profile 由请求体可选传入（缺省 desktop，向后兼容）。preset 发现与 health 自检
         //   必须用**同一个** profile，否则非默认 profile 的实例会报「装好了却未装」。
-        const profileName = profileFromRequest(body);
+        //   ccll fork：缺省时用 hostProfile，而不是硬回落 desktop。
+        const profileName = profileFromRequest(body, hostProfile ?? undefined);
         if (action === "state") {
           const home = resolveHome();
           const allPresets = findPresetFiles(home, profileName);
@@ -1868,7 +1894,7 @@ function applyInner(ctx) {
           return sendJson(res, 200, { ok: true, defaults: uiDefaults(), fieldLabels: uiFieldLabels(), configItems: CONFIG_ITEMS });
         }
         if (action === "save") {
-          const result = saveConfig(body.patch ?? {}, { home: resolveHome() });
+          const result = saveConfig(body.patch ?? {}, { home: resolveHome(), profile: profileName });
           return sendJson(res, 200, { ok: true, ...result });
         }
         if (action === "health") {
